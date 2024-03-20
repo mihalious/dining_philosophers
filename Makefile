@@ -22,6 +22,17 @@ $(OBJECTS): $(OBJ)/%.o : $(SRC)/%.c
 clean:
 	rm -f $(wildcard $(OBJ)/*.o) $(BIN)
 
+asan:
+	$(CC) $(CFLAGS) -fsanitize=address $(wildcard $(SRC)/*.c) $(LDFLAGS) -o $(BIN)
+	./$(BIN)
+
+tsan:
+	$(CC) $(CFLAGS) -fsanitize=thread $(wildcard $(SRC)/*.c) $(LDFLAGS) -o $(BIN)
+	./$(BIN)
+
+#valgrind:
+#	$(CC) $(CFLAGS) $(wildcard $(SRC)/*.c) $(LDFLAGS) -o $(BIN)
+#	valgrind ./$(BIN)
 #OBJECTS := $(patsubst $(SRC)/%.c,$(OBJ)/%.o,$(wildcard $(SRC)/*.c))
 #
 #run: build

@@ -20,7 +20,7 @@ typedef struct ForksArray {
     size_t len;
 } ForksArray;
 
-typedef struct ThreadData {
+typedef struct ThreadArgs {
     Philosopher *philosopher;
     ForksArray forks;
 } ThreadArgs;
@@ -66,8 +66,8 @@ void *philosopher_run(void *data) {
     ThreadArgs *args = (ThreadArgs *)data;
     Philosopher *philosopher = args->philosopher;
     ForksArray forks = args->forks;
+    printf("Thread for Philosopher with id: %d\n", philosopher->id);
 
-    printf("before run with Philosopher  %d\n", philosopher->id);
     while (true) {
         // time in seconds
         uint64_t time = 3;
@@ -82,8 +82,8 @@ Fork fork_new(int32_t id, bool in_use) {
     return f;
 }
 
-int main(int argc, char *argv[]) {
-    const uint64_t N = 2;
+int main() {
+    const uint64_t N = 5;
 
     Philosopher *philosophers = malloc(sizeof(Philosopher) * N);
     if (!philosophers) {
@@ -106,12 +106,18 @@ int main(int argc, char *argv[]) {
     if (!handles) {
         return 1;
     }
+    ThreadArgs *thread_args = malloc(sizeof(ThreadArgs) * N);
+    if (!thread_args) {
+        return 1;
+    }
     for (size_t i = 0; i < N; i++) {
-        printf("Thread Philosopher with id: %d\n", philosophers[i].id);
-        ThreadArgs data = {.philosopher = &philosophers[i], .forks = forks};
-        printf("thread args philosopher: id: %d\n", data.philosopher->id);
-        pthread_create(&handles[i], nullptr, philosopher_run, (void *)&data);
-        // philosophers[i] = philosepher_new(i, false, false);
+        thread_args[i].philosopher = &philosophers[i];
+        thread_args[i].forks = forks;
+    }
+
+    for (size_t i = 0; i < N; i++) {
+        pthread_create(&handles[i], nullptr, philosopher_run,
+                       (void *)&thread_args[i]);
     }
     for (size_t i = 0; i < N; i++) {
         pthread_join(handles[i], nullptr);
@@ -120,6 +126,7 @@ int main(int argc, char *argv[]) {
     free(philosophers);
     free(forks_ptr);
     free(handles);
+    free(thread_args);
 }
 // void philosopher_try_rfork(Philosopher *philosopher, Fork *forks,
 //                            size_t forks_len) {
