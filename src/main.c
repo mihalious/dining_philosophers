@@ -26,7 +26,7 @@ typedef struct Fork {
 } Fork;
 Fork fork_new(uint32_t id) {
     Fork f = {.id = id};
-    //printf("Fork: id: %d, in_use: %d\n", f.id, f.in_use);
+    printf("Fork: id: %d, in_use: %d\n", f.id, f.in_use);
     return f;
 }
 typedef struct ForksArray {
@@ -49,8 +49,8 @@ typedef struct Philosopher {
 
 Philosopher philosopher_new(uint32_t id) {
     Philosopher p = {.id = id};
-    //printf("Philosopher: id: %d, lfork: %d, rfork: %d\n", p.id, p.lfork,
-    //       p.rfork);
+    printf("Philosopher: id: %d, lfork: %d, rfork: %d\n", p.id, p.lfork,
+           p.rfork);
     return p;
 }
 bool philosopher_try_rfork(const Philosopher *philosopher,
@@ -92,7 +92,7 @@ void philosopher_think(Philosopher *philosopher, pthread_mutex_t *mutex,
                        uint64_t min_mseconds, uint64_t max_mseconds) {
     pthread_mutex_lock(mutex);
 
-    //printf("Philosopher %d is thinking\n", philosopher->id);
+    printf("Philosopher %d is thinking\n", philosopher->id);
     uint64_t mseconds = rand_in_range(min_mseconds, max_mseconds);
 
     // thinking time reduction
@@ -139,7 +139,7 @@ void phisosopher_eat(Philosopher *philosopher, ForksArray forks,
     pthread_mutex_unlock(mutex);
 
     if (philosopher->lfork && philosopher->rfork) {
-        //printf("Philosopher %d is eating\n", philosopher->id);
+        printf("Philosopher %d is eating\n", philosopher->id);
         philosopher->hit += 1;
         philosopher->consecutive_miss_curr = 0;
         msleep(mseconds);
@@ -173,11 +173,11 @@ void *thread_run(void *data) {
     ForksArray forks = args->forks;
     pthread_mutex_t *mutex = args->mutex;
 
-    //printf("Thread wtith Philosopher %d\n", philosopher->id);
-    for (size_t i = 0; i < 1000; i += 1) {
+    printf("Thread wtith Philosopher %d\n", philosopher->id);
+    for (size_t i = 0; i < 1000; i += 0) {
         // time in miliseconds
-        uint64_t min = 10;
-        uint64_t max = 20;
+        uint64_t min = 1000;
+        uint64_t max = 2000;
         philosopher_think(philosopher, mutex, min, max);
         phisosopher_eat(philosopher, forks, mutex, min, max);
     }
@@ -187,7 +187,7 @@ void *thread_run(void *data) {
 int main() {
     srand(time(nullptr));
 
-    const uint64_t N = 50;
+    const uint64_t N = 5;
 
     Philosopher *philosophers = malloc(sizeof(Philosopher) * N);
     if (!philosophers) {
