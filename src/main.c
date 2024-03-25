@@ -96,9 +96,9 @@ void philosopher_think(Philosopher *philosopher, pthread_mutex_t *mutex,
     uint64_t mseconds = rand_in_range(min_mseconds, max_mseconds);
 
     // thinking time reduction
-    //if (philosopher->consecutive_miss_curr > 9) {
-    //    mseconds -= (mseconds * 20) / 100;
-    //}
+    if (philosopher->consecutive_miss_curr > 10) {
+        mseconds -= (mseconds * 20) / 100;
+    }
 
     pthread_mutex_unlock(mutex);
 
@@ -174,7 +174,7 @@ void *thread_run(void *data) {
     pthread_mutex_t *mutex = args->mutex;
 
     printf("Thread wtith Philosopher %d\n", philosopher->id);
-    for (size_t i = 0; i < 1000; i += 0) {
+    for (size_t i = 0; i < 1000; i += 1) {
         // time in miliseconds
         uint64_t min = 1000;
         uint64_t max = 2000;
@@ -233,7 +233,7 @@ int main() {
         fprintf(stderr, "Philosopher %d\n", philosophers[i].id);
         fprintf(stderr, "hits: %ld\n", philosophers[i].hit);
         fprintf(stderr, "misses: %ld\n", philosophers[i].miss);
-        fprintf(stderr, "consecutive miss: %ld\n",
+        fprintf(stderr, "max consecutive miss: %ld\n",
                 philosophers[i].consecutive_miss_max);
         printf("%ld,", philosophers[i].consecutive_miss_max);
     }
